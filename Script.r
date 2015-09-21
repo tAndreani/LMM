@@ -9,7 +9,7 @@ reference_TrId_in_LineSpecific <- reference[which(reference$Transcript_ID%in%tra
 line_specific_TrId_in_Reference <- line_specific[which(line_specific$Transcript_ID%in%transcript_reference),]
 
 #Sort
-library(plyr)
+library("plyr")
 sort_line_specific <- arrange(reference_TrId_in_LineSpecific,Transcript_ID)
 sort_reference <- arrange(line_specific_TrId_in_Reference,Transcript_ID)
 
@@ -27,7 +27,7 @@ boxplot(correlation_diagonal)
 #Consider different source of variablity i.e. the samples and the methods
 .libPaths("/nfs/users/rg/tandreani/R/x86_64-redhat-linux-gnu-library/3.2")
 library("lme4")
-library(reshape2)
+library("reshape2")
 
 matrix1=sort_reference
 matrix2=sort_line_specific
