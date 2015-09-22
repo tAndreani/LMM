@@ -1,3 +1,6 @@
+#Clean the directory
+rm(list=ls())
+
 #Load data
 line_specific <- read.table("merged.isoforms.fpkm.tracking.final.no.30.and.70.correct.txt",header=T,sep="\t")
 reference <- read.table("CufflinksQuantification_parsed_column_renamed_ordered.csv ",header=T,sep="\t")
@@ -9,7 +12,7 @@ reference_TrId_in_LineSpecific <- reference[which(reference$Transcript_ID%in%tra
 line_specific_TrId_in_Reference <- line_specific[which(line_specific$Transcript_ID%in%transcript_reference),]
 
 #Sort
-library("plyr")
+library(plyr)
 sort_line_specific <- arrange(reference_TrId_in_LineSpecific,Transcript_ID)
 sort_reference <- arrange(line_specific_TrId_in_Reference,Transcript_ID)
 
@@ -27,7 +30,7 @@ boxplot(correlation_diagonal)
 #Consider different source of variablity i.e. the samples and the methods
 .libPaths("/nfs/users/rg/tandreani/R/x86_64-redhat-linux-gnu-library/3.2")
 library("lme4")
-library("reshape2")
+library(reshape2)
 
 matrix1=sort_reference
 matrix2=sort_line_specific
@@ -60,3 +63,19 @@ for (i in 1:nrow(matrix1)){
     output=rbind(output,total_variance)
   }
 }
+
+#Now Calculate the variability of methods,samples,residual
+output2 <- as.data.frame(output)
+total_sum=output2$method+output2$sample+output2$residual
+method=(output2$method/total_sum)
+sample=(output2$sample/total_sum)
+residual=(output2$residual/total_sum)
+variance_method = lapply(output2,function(x) method)
+variance_sample = lapply(output2,function(x) sample)
+variance_residual = lapply(output2,function(x) residual)
+
+#Plot
+variances <- cbind(variance_method$method,variance_sample$sample,variance_residual$residual)
+names_variances <- c("method","sample","residual")
+colnames(variances)=names_variances
+boxplot(variances)
